@@ -439,9 +439,8 @@ async def handle_message(update, context):
         await msg.reply_text("🔥 Calm down da!")
         return
 
-
 # -------------------- MAIN LOOP --------------------
-async def main():
+def main():
     global application
 
     application = ApplicationBuilder().token(TOKEN).build()
@@ -464,14 +463,8 @@ async def main():
     scheduler.start()
 
     logger.info("Starting Suzi Poo...")
-    await application.initialize()
-    await application.start()
-    await application.updater.start_polling()
-    await application.updater.wait_stop()
-
+    # run_polling runs and manages the asyncio loop internally - do NOT wrap this in asyncio.run()
+    application.run_polling()
 
 if __name__ == "__main__":
-    try:
-        asyncio.run(main())
-    except:
-        pass
+    main()
