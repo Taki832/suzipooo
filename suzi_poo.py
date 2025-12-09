@@ -14,11 +14,6 @@ except:
     markovify = None
 
 try:
-    from gtts import gTTS
-except:
-    gTTS = None
-
-try:
     import yt_dlp
 except:
     yt_dlp = None
