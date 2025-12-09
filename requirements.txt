@@ -1,7 +1,6 @@
-python-telegram-bot==20.8
-apscheduler
-requests
-python-dotenv
-markovify
-yt-dlp
-Pillow
+python-telegram-bot==20.3
+apscheduler==3.10.4
+python-dotenv==1.0.0
+requests==2.31.0
+markovify==0.9.4
+yt-dlp==2024.04.09
