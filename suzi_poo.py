@@ -469,10 +469,6 @@ async def main():
     await application.updater.start_polling()
     await application.updater.wait_stop()
 
-
 if __name__ == "__main__":
-    try:
-        asyncio.run(main())
-    except:
-        pass
+    asyncio.run(main())
 
