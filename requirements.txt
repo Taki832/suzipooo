@@ -1,0 +1,7 @@
+python-telegram-bot==20.8
+apscheduler
+requests
+python-dotenv
+markovify
+yt-dlp
+Pillow
