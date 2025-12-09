@@ -466,9 +466,12 @@ async def main():
     logger.info("Starting Suzi Poo...")
     await application.run_polling()
 
+
 if __name__ == "__main__":
     import asyncio
-    asyncio.run(main())
-
+    try:
+        asyncio.run(main())
+    except RuntimeError:
+        pass
 
 
