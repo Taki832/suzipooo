@@ -464,10 +464,8 @@ async def main():
     scheduler.start()
 
     logger.info("Starting Suzi Poo...")
-    await application.initialize()
-    await application.start()
-    await application.updater.start_polling()
-    await application.updater.wait_stop()
+    await application.run_polling()
+
 
 if __name__ == "__main__":
     asyncio.run(main())
