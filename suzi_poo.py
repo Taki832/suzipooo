@@ -22,13 +22,11 @@ import requests
 from dotenv import load_dotenv
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
-from telegram import Update
 from telegram.ext import (
     ApplicationBuilder,
     Application,
     CommandHandler,
     MessageHandler,
-    ContextTypes,
     filters,
 )
 
@@ -239,7 +237,6 @@ def dl_youtube(query):
         with yt_dlp.YoutubeDL(opts) as ydl:
             ydl.extract_info(query, download=True)
 
-        # find file
         file = None
         for f in os.listdir("/tmp"):
             if f.startswith("sz.") and f.endswith(".mp3"):
@@ -257,7 +254,7 @@ def dl_youtube(query):
         return None, str(e)
 
 
-# -------------------- APSCHEDULER FIXED JOB --------------------
+# -------------------- APSCHEDULER JOB --------------------
 async def check_reminders_job():
     now = datetime.utcnow()
     due = get_due_reminders(now)
@@ -281,11 +278,11 @@ async def cmd_start(update, context):
         "/settone kind|angry\n"
         "/setlang en|ta|hi\n"
         "/remind YYYY-MM-DD HH:MM | message\n"
-        "/voice text\n"
         "/pic cat\n"
         "/song never gonna give you up\n"
         "Tag me to get a reply!"
     )
+
 
 async def cmd_learn_on(update, context):
     chat = update.effective_chat
@@ -302,6 +299,7 @@ async def cmd_learn_on(update, context):
     set_learning(chat.id, True)
     await update.message.reply_text("Learning ENABLED.")
 
+
 async def cmd_learn_off(update, context):
     chat = update.effective_chat
     user = update.effective_user
@@ -317,6 +315,7 @@ async def cmd_learn_off(update, context):
     set_learning(chat.id, False)
     await update.message.reply_text("Learning DISABLED.")
 
+
 async def cmd_settone(update, context):
     if not context.args:
         return await update.message.reply_text("Usage: /settone kind|angry")
@@ -326,6 +325,7 @@ async def cmd_settone(update, context):
     set_setting(update.effective_chat.id, "tone", tone)
     await update.message.reply_text("Tone updated.")
 
+
 async def cmd_setlang(update, context):
     if not context.args:
         return await update.message.reply_text("Usage: /setlang en|ta|hi")
@@ -334,6 +334,7 @@ async def cmd_setlang(update, context):
         return await update.message.reply_text("Invalid language.")
     set_setting(update.effective_chat.id, "lang", lang)
     await update.message.reply_text("Language updated.")
+
 
 async def cmd_remind(update, context):
     text = update.message.text.partition(" ")[2]
@@ -351,22 +352,6 @@ async def cmd_remind(update, context):
     add_reminder(update.effective_chat.id, update.effective_user.id, msg, dt)
     await update.message.reply_text(f"Reminder set for {dt}.")
 
-async def cmd_voice(update, context):
-    text = update.message.text.partition(" ")[2].strip()
-    if not text:
-        return await update.message.reply_text("Usage: /voice text")
-
-    if gTTS is None:
-        return await update.message.reply_text("Voice not supported on Railway.")
-
-    try:
-        tts = gTTS(text=text, lang=get_setting(update.effective_chat.id, "lang", "en"))
-        bio = BytesIO()
-        tts.write_to_fp(bio)
-        bio.seek(0)
-        await update.message.reply_voice(voice=bio)
-    except:
-        await update.message.reply_text("Voice failed.")
 
 async def cmd_pic(update, context):
     query = update.message.text.partition(" ")[2].strip()
@@ -378,6 +363,7 @@ async def cmd_pic(update, context):
     bio = BytesIO(img)
     bio.name = "pic.jpg"
     await update.message.reply_photo(photo=bio)
+
 
 async def cmd_song(update, context):
     q = update.message.text.partition(" ")[2].strip()
@@ -403,7 +389,7 @@ async def handle_message(update, context):
         return
 
     text = msg.text
-    chat_id = msg.chat_id
+    chat_id = msg.chat.id
     user = update.effective_user
 
     # Learning
@@ -467,7 +453,6 @@ async def main():
     application.add_handler(CommandHandler("settone", cmd_settone))
     application.add_handler(CommandHandler("setlang", cmd_setlang))
     application.add_handler(CommandHandler("remind", cmd_remind))
-    application.add_handler(CommandHandler("voice", cmd_voice))
     application.add_handler(CommandHandler("pic", cmd_pic))
     application.add_handler(CommandHandler("song", cmd_song))
 
