@@ -1,1 +1,1 @@
-web: python suzi_poo.py
+worker: python suzi_poo.py
